@@ -116,7 +116,9 @@ function LoginScreen({
 function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => void }) {
   const [selectedDay, setSelectedDay] = useState(() => DAYS[new Date().getDay()]);
   const [dayProgress, setDayProgress] = useState<DayProgress | null>(null);
+  const [activeExercise, setActiveExercise] = useState(0);
   const [showDayPicker, setShowDayPicker] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const workout: DayWorkout = workouts[selectedDay];
   const dateStr = getDateString();
@@ -151,6 +153,50 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
       })),
       completed: false,
     });
+    setActiveExercise(0);
+  }
+
+  // Save progress to server
+  const saveProgress = useCallback(
+    async (progress: DayProgress) => {
+      setSaving(true);
+      try {
+        await fetch("/api/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: username, date: dateStr, dayProgress: progress }),
+        });
+      } catch {
+        // silent fail — will retry on next save
+      }
+      setSaving(false);
+    },
+    [username, dateStr]
+  );
+
+  function completeSet() {
+    if (!dayProgress) return;
+    const updated = structuredClone(dayProgress);
+    const exProgress = updated.exercises[activeExercise];
+    const nextIncomplete = exProgress.sets.findIndex((s) => !s.completed);
+    if (nextIncomplete !== -1) {
+      exProgress.sets[nextIncomplete].completed = true;
+    }
+    exProgress.completed = exProgress.sets.every((s) => s.completed);
+    updated.completed = updated.exercises.every((e) => e.completed);
+
+    if (!updated.startedAt) updated.startedAt = new Date().toISOString();
+
+    setDayProgress(updated);
+    saveProgress(updated);
+
+    if (exProgress.completed && activeExercise < workout.exercises.length - 1) {
+      setActiveExercise(activeExercise + 1);
+    }
+  }
+
+  function jumpToExercise(idx: number) {
+    setActiveExercise(idx);
   }
 
   // ─── Render ─────────────────────────────────────────────────────
@@ -169,6 +215,7 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
             <p className="text-xs text-zinc-500">Hey, {username}</p>
           </div>
           <div className="flex items-center gap-2">
+            {saving && <span className="text-xs text-zinc-500">saving...</span>}
             <button
               onClick={() => setShowDayPicker(!showDayPicker)}
               className="px-3 py-1.5 text-sm bg-zinc-800 rounded-lg border border-zinc-700"
@@ -191,6 +238,7 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
                   setSelectedDay(d);
                   setShowDayPicker(false);
                   if (d !== selectedDay) {
+                    setActiveExercise(0);
                     const w = workouts[d];
                     if (w.isRest) {
                       setDayProgress(null);
@@ -244,20 +292,43 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
       <main className="flex-1 overflow-y-auto">
         {workout.isRest ? (
           <RestDay />
+        ) : dayProgress?.completed ? (
+          <CompletedView />
         ) : (
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 pb-40">
             {workout.exercises.map((exercise, idx) => (
               <ExerciseCard
                 key={idx}
                 exercise={exercise}
                 index={idx}
-                isActive={false}
+                isActive={idx === activeExercise && isToday}
                 progress={dayProgress?.exercises[idx]}
+                onTap={() => isToday && jumpToExercise(idx)}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Bottom Action Bar */}
+      {isToday && !workout.isRest && !dayProgress?.completed && (
+        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur border-t border-zinc-800 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-3">
+              <p className="text-sm text-zinc-400 truncate">{workout.exercises[activeExercise].name}</p>
+              <p className="text-xs text-zinc-600">
+                Set {Math.min((dayProgress?.exercises[activeExercise]?.sets.filter((s) => s.completed).length ?? 0) + 1, workout.exercises[activeExercise].sets)} of {workout.exercises[activeExercise].sets} &bull; {workout.exercises[activeExercise].reps}
+              </p>
+            </div>
+            <button
+              onClick={completeSet}
+              className="w-full py-3.5 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-lg transition-colors active:scale-95"
+            >
+              Complete Set
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -269,11 +340,13 @@ function ExerciseCard({
   index,
   isActive,
   progress,
+  onTap,
 }: {
   exercise: Exercise;
   index: number;
   isActive: boolean;
   progress?: ExerciseProgress;
+  onTap: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const completedSets = progress?.sets.filter((s) => s.completed).length ?? 0;
@@ -281,6 +354,7 @@ function ExerciseCard({
 
   return (
     <div
+      onClick={onTap}
       className={`rounded-2xl border transition-all ${
         isDone
           ? "border-green-800/50 bg-green-950/20"
@@ -327,16 +401,17 @@ function ExerciseCard({
           </div>
         </div>
 
-        {/* Completed sets count */}
         {completedSets > 0 && !isDone && (
           <p className="text-xs text-orange-400 mt-1">
             {completedSets}/{exercise.sets} sets done
           </p>
         )}
 
-        {/* Expand button */}
         <button
-          onClick={() => setExpanded(!expanded)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
           className="text-xs text-zinc-500 hover:text-zinc-300 mt-2"
         >
           {expanded ? "Hide details" : "Show details"}
@@ -370,6 +445,18 @@ function RestDay() {
           <li>- Eat enough protein</li>
         </ul>
       </div>
+    </div>
+  );
+}
+
+// ─── Completed View ─────────────────────────────────────────────────────────
+
+function CompletedView() {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+      <div className="text-6xl mb-4">🎉</div>
+      <h2 className="text-2xl font-bold text-green-400 mb-2">Workout Complete!</h2>
+      <p className="text-zinc-400">Great work today. Rest up and come back stronger.</p>
     </div>
   );
 }
