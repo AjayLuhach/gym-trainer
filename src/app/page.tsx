@@ -27,6 +27,14 @@ interface UserData {
   progress: Record<string, DayProgress>;
 }
 
+// ─── Helper: format seconds to mm:ss ────────────────────────────────────────
+
+function fmt(s: number) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+}
+
 // ─── Day names ──────────────────────────────────────────────────────────────
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -117,8 +125,12 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
   const [selectedDay, setSelectedDay] = useState(() => DAYS[new Date().getDay()]);
   const [dayProgress, setDayProgress] = useState<DayProgress | null>(null);
   const [activeExercise, setActiveExercise] = useState(0);
+  const [mode, setMode] = useState<"idle" | "working" | "resting">("idle");
+  const [timer, setTimer] = useState(0);
+  const [restTime, setRestTime] = useState(60);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const [saving, setSaving] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const workout: DayWorkout = workouts[selectedDay];
   const dateStr = getDateString();
@@ -154,6 +166,8 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
       completed: false,
     });
     setActiveExercise(0);
+    setMode("idle");
+    setTimer(0);
   }
 
   // Save progress to server
@@ -174,6 +188,32 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     [username, dateStr]
   );
 
+  // Timer logic
+  useEffect(() => {
+    if (mode === "working") {
+      intervalRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+    } else if (mode === "resting") {
+      intervalRef.current = setInterval(() => {
+        setTimer((t) => {
+          if (t <= 1) {
+            clearInterval(intervalRef.current!);
+            setMode("idle");
+            return 0;
+          }
+          return t - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [mode]);
+
+  function startSet() {
+    setMode("working");
+    setTimer(0);
+  }
+
   function completeSet() {
     if (!dayProgress) return;
     const updated = structuredClone(dayProgress);
@@ -190,13 +230,30 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     setDayProgress(updated);
     saveProgress(updated);
 
-    if (exProgress.completed && activeExercise < workout.exercises.length - 1) {
-      setActiveExercise(activeExercise + 1);
+    if (exProgress.completed) {
+      // Move to next exercise
+      setMode("idle");
+      setTimer(0);
+      if (activeExercise < workout.exercises.length - 1) {
+        setActiveExercise(activeExercise + 1);
+      }
+    } else {
+      // Rest between sets
+      setMode("resting");
+      setTimer(restTime);
     }
+  }
+
+  function skipRest() {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setMode("idle");
+    setTimer(0);
   }
 
   function jumpToExercise(idx: number) {
     setActiveExercise(idx);
+    setMode("idle");
+    setTimer(0);
   }
 
   // ─── Render ─────────────────────────────────────────────────────
@@ -239,6 +296,8 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
                   setShowDayPicker(false);
                   if (d !== selectedDay) {
                     setActiveExercise(0);
+                    setMode("idle");
+                    setTimer(0);
                     const w = workouts[d];
                     if (w.isRest) {
                       setDayProgress(null);
@@ -296,6 +355,25 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
           <CompletedView />
         ) : (
           <div className="p-4 space-y-4 pb-40">
+            {/* Rest Timer Controls */}
+            {isToday && (
+              <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <span>Rest timer:</span>
+                {[30, 45, 60, 90].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setRestTime(t)}
+                    className={`px-2 py-1 rounded ${
+                      restTime === t ? "bg-orange-500/20 text-orange-400" : "bg-zinc-800"
+                    }`}
+                  >
+                    {t}s
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Exercise List */}
             {workout.exercises.map((exercise, idx) => (
               <ExerciseCard
                 key={idx}
@@ -312,22 +390,15 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
 
       {/* Bottom Action Bar */}
       {isToday && !workout.isRest && !dayProgress?.completed && (
-        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur border-t border-zinc-800 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="max-w-lg mx-auto">
-            <div className="text-center mb-3">
-              <p className="text-sm text-zinc-400 truncate">{workout.exercises[activeExercise].name}</p>
-              <p className="text-xs text-zinc-600">
-                Set {Math.min((dayProgress?.exercises[activeExercise]?.sets.filter((s) => s.completed).length ?? 0) + 1, workout.exercises[activeExercise].sets)} of {workout.exercises[activeExercise].sets} &bull; {workout.exercises[activeExercise].reps}
-              </p>
-            </div>
-            <button
-              onClick={completeSet}
-              className="w-full py-3.5 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-lg transition-colors active:scale-95"
-            >
-              Complete Set
-            </button>
-          </div>
-        </div>
+        <ActionBar
+          mode={mode}
+          timer={timer}
+          exercise={workout.exercises[activeExercise]}
+          progress={dayProgress?.exercises[activeExercise]}
+          onStart={startSet}
+          onComplete={completeSet}
+          onSkipRest={skipRest}
+        />
       )}
     </div>
   );
@@ -423,6 +494,95 @@ function ExerciseCard({
             <p className="text-xs text-orange-300/70">{exercise.tip}</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Action Bar ─────────────────────────────────────────────────────────────
+
+function ActionBar({
+  mode,
+  timer,
+  exercise,
+  progress,
+  onStart,
+  onComplete,
+  onSkipRest,
+}: {
+  mode: "idle" | "working" | "resting";
+  timer: number;
+  exercise: Exercise;
+  progress?: ExerciseProgress;
+  onStart: () => void;
+  onComplete: () => void;
+  onSkipRest: () => void;
+}) {
+  const completedSets = progress?.sets.filter((s) => s.completed).length ?? 0;
+  const currentSet = completedSets + 1;
+  const totalSets = exercise.sets;
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur border-t border-zinc-800 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="max-w-lg mx-auto">
+        {/* Current exercise info */}
+        <div className="text-center mb-3">
+          <p className="text-sm text-zinc-400 truncate">{exercise.name}</p>
+          <p className="text-xs text-zinc-600">
+            Set {Math.min(currentSet, totalSets)} of {totalSets} &bull; {exercise.reps}
+          </p>
+        </div>
+
+        {/* Timer Display */}
+        {mode !== "idle" && (
+          <div className={`text-center mb-3 ${mode === "working" ? "pulse-active" : ""}`}>
+            <span
+              className={`text-4xl font-mono font-bold ${
+                mode === "resting" ? "text-blue-400" : "text-orange-400"
+              }`}
+            >
+              {fmt(timer)}
+            </span>
+            <p className="text-xs text-zinc-500 mt-1">
+              {mode === "working" ? "Working..." : "Rest - get ready for next set"}
+            </p>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          {mode === "idle" && (
+            <button
+              onClick={onStart}
+              className="flex-1 py-3.5 bg-orange-500 hover:bg-orange-600 rounded-xl font-bold text-lg transition-colors active:scale-95"
+            >
+              Start Set {Math.min(currentSet, totalSets)}
+            </button>
+          )}
+
+          {mode === "working" && (
+            <button
+              onClick={onComplete}
+              className="flex-1 py-3.5 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-lg transition-colors active:scale-95"
+            >
+              Done
+            </button>
+          )}
+
+          {mode === "resting" && (
+            <>
+              <button
+                onClick={onSkipRest}
+                className="flex-1 py-3.5 bg-zinc-700 hover:bg-zinc-600 rounded-xl font-semibold transition-colors active:scale-95"
+              >
+                Skip Rest
+              </button>
+              <div className="flex-1 flex items-center justify-center bg-blue-950/50 rounded-xl border border-blue-800/50">
+                <span className="text-blue-400 font-mono text-xl">{fmt(timer)}</span>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
