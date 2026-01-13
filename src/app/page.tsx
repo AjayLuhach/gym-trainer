@@ -35,6 +35,29 @@ function fmt(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
+// ─── LocalStorage cache for offline support ─────────────────────────────────
+
+function cacheProgress(username: string, date: string, progress: DayProgress) {
+  try {
+    const key = `trainer_progress_${username}`;
+    const cached = JSON.parse(localStorage.getItem(key) || "{}");
+    cached[date] = progress;
+    localStorage.setItem(key, JSON.stringify(cached));
+  } catch {
+    // storage full or unavailable
+  }
+}
+
+function getCachedProgress(username: string, date: string): DayProgress | null {
+  try {
+    const key = `trainer_progress_${username}`;
+    const cached = JSON.parse(localStorage.getItem(key) || "{}");
+    return cached[date] || null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Day names ──────────────────────────────────────────────────────────────
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -136,18 +159,27 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
   const dateStr = getDateString();
   const isToday = DAYS[new Date().getDay()] === selectedDay;
 
-  // Load user progress
+  // Load user progress — try server first, fallback to localStorage cache
   useEffect(() => {
+    // Immediately show cached data if available
+    const cached = getCachedProgress(username, dateStr);
+    if (cached && isToday) {
+      setDayProgress(cached);
+    }
+
     fetch(`/api/user?name=${encodeURIComponent(username)}`)
       .then((r) => r.json())
       .then((data: UserData) => {
         if (data.progress && data.progress[dateStr] && isToday) {
           setDayProgress(data.progress[dateStr]);
-        } else {
+          cacheProgress(username, dateStr, data.progress[dateStr]);
+        } else if (!cached) {
           resetProgress();
         }
       })
-      .catch(() => resetProgress());
+      .catch(() => {
+        if (!cached) resetProgress();
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
@@ -228,6 +260,7 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     if (!updated.startedAt) updated.startedAt = new Date().toISOString();
 
     setDayProgress(updated);
+    cacheProgress(username, dateStr, updated);
     saveProgress(updated);
 
     if (exProgress.completed) {
