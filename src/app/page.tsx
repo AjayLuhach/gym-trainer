@@ -241,12 +241,20 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     };
   }, [mode]);
 
+  function vibrate(ms: number | number[] = 50) {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(ms);
+    }
+  }
+
   function startSet() {
+    vibrate(30);
     setMode("working");
     setTimer(0);
   }
 
   function completeSet() {
+    vibrate([50, 30, 50]);
     if (!dayProgress) return;
     const updated = structuredClone(dayProgress);
     const exProgress = updated.exercises[activeExercise];
