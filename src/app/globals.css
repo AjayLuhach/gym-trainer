@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0c0c0c;
+  --foreground: #e5e5e5;
 }
 
 @theme inline {
@@ -18,7 +18,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Custom scrollbar for mobile feel */
+/* Minimal scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -27,7 +27,7 @@ body {
   border-radius: 4px;
 }
 
-/* PWA safe area support */
+/* PWA safe area */
 body {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
@@ -35,9 +35,9 @@ body {
 
 /* Timer pulse animation */
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-  70% { box-shadow: 0 0 0 15px rgba(249, 115, 22, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.35); }
+  70% { box-shadow: 0 0 0 18px rgba(96, 165, 250, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0); }
 }
 .pulse-active {
   animation: pulse-ring 1.5s ease-out infinite;
