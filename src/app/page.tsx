@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { workouts, type Exercise, type DayWorkout, getDateString } from "@/data/workouts";
+import { workouts, type DayWorkout, getDateString } from "@/data/workouts";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,12 +62,14 @@ const SWIPE_THRESHOLD = 60;
 export default function Home() {
   const [username, setUsername] = useState<string | null>(null);
   const [inputName, setInputName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("trainer_username");
-    if (stored) setUsername(stored);
-    setLoading(false);
+    setMounted(true);
+    try {
+      const stored = localStorage.getItem("trainer_username");
+      if (stored) setUsername(stored);
+    } catch {}
   }, []);
 
   function handleLogin() {
@@ -80,15 +82,11 @@ export default function Home() {
   function handleLogout() {
     localStorage.removeItem("trainer_username");
     setUsername(null);
+    setInputName("");
   }
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-blue-400 text-2xl">Loading...</div>
-      </div>
-    );
-  }
+  // SSR + first client frame: show nothing to avoid hydration mismatch
+  if (!mounted) return null;
 
   if (!username) {
     return (
