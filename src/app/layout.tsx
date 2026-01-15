@@ -43,7 +43,7 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
-      <body className="min-h-dvh flex flex-col bg-[#0a0a0a] text-white">
+      <body className="min-h-dvh flex flex-col bg-[#0c0c0c] text-white">
         {children}
         <script
           dangerouslySetInnerHTML={{

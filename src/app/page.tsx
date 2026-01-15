@@ -85,8 +85,14 @@ export default function Home() {
     setInputName("");
   }
 
-  // SSR + first client frame: show nothing to avoid hydration mismatch
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="text-7xl mb-4">💪</div>
+        <h1 className="text-4xl font-bold text-blue-400">Kaam Chlra</h1>
+      </div>
+    );
+  }
 
   if (!username) {
     return (
