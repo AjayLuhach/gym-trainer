@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kaam Chlra - Trainer",
+  title: "Stay Fit - Trainer",
   description: "Personal daily workout tracker",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Kaam Chlra",
+    title: "Stay Fit",
   },
 };
 

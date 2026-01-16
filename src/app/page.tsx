@@ -89,7 +89,7 @@ export default function Home() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="text-7xl mb-4">💪</div>
-        <h1 className="text-4xl font-bold text-blue-400">Kaam Chlra</h1>
+        <h1 className="text-4xl font-bold text-blue-400">Stay Fit</h1>
       </div>
     );
   }
@@ -99,7 +99,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="text-center mb-10">
           <div className="text-7xl mb-4">💪</div>
-          <h1 className="text-4xl font-bold text-blue-400">Kaam Chlra</h1>
+          <h1 className="text-4xl font-bold text-blue-400">Stay Fit</h1>
           <p className="text-neutral-400 text-lg mt-2">Daily Workout Tracker</p>
         </div>
         <div className="w-full max-w-sm space-y-4">
@@ -133,7 +133,7 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
   const [selectedDay, setSelectedDay] = useState(() => DAYS[new Date().getDay()]);
   const [dayProgress, setDayProgress] = useState<DayProgress | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const [mode, setMode] = useState<"idle" | "working" | "resting">("idle");
+  const [mode, setMode] = useState<"idle" | "working" | "paused" | "resting">("idle");
   const [timer, setTimer] = useState(0);
   const [restTime, setRestTime] = useState(60);
   const [showDayPicker, setShowDayPicker] = useState(false);
@@ -153,15 +153,22 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
 
   // ─── Load progress ──────────────────────────────────────────────
 
+  function resumeFrom(progress: DayProgress) {
+    setDayProgress(progress);
+    if (progress.completed) return;
+    const idx = progress.exercises.findIndex((e) => !e.completed);
+    if (idx !== -1) setActiveIdx(idx);
+  }
+
   useEffect(() => {
     const cached = getCachedProgress(username, dateStr);
-    if (cached && isToday) setDayProgress(cached);
+    if (cached && isToday) resumeFrom(cached);
 
     fetch(`/api/user?name=${encodeURIComponent(username)}`)
       .then((r) => r.json())
       .then((data: UserData) => {
         if (data.progress?.[dateStr] && isToday) {
-          setDayProgress(data.progress[dateStr]);
+          resumeFrom(data.progress[dateStr]);
           cacheProgress(username, dateStr, data.progress[dateStr]);
         } else if (!cached) {
           resetProgress();
@@ -213,21 +220,21 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     if (mode === "working") {
       intervalRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     } else if (mode === "resting") {
-      intervalRef.current = setInterval(() => {
-        setTimer((t) => {
-          if (t <= 1) {
-            clearInterval(intervalRef.current!);
-            setMode("idle");
-            return 0;
-          }
-          return t - 1;
-        });
-      }, 1000);
+      intervalRef.current = setInterval(() => setTimer((t) => Math.max(0, t - 1)), 1000);
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [mode]);
+
+  // Auto-start working timer when rest countdown reaches 0
+  useEffect(() => {
+    if (mode === "resting" && timer === 0) {
+      vibrate([30, 20, 30]);
+      setMode("working");
+      setTimer(0);
+    }
+  }, [timer, mode]);
 
   function vibrate(ms: number | number[] = 50) {
     if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(ms);
@@ -257,10 +264,14 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
     saveProgress(updated);
 
     if (exProg.completed) {
-      setMode("idle");
-      setTimer(0);
       if (activeIdx < workout.exercises.length - 1) {
         setActiveIdx(activeIdx + 1);
+        setMode("resting");
+        setTimer(restTime);
+      } else {
+        // Last exercise done
+        setMode("idle");
+        setTimer(0);
       }
     } else {
       setMode("resting");
@@ -270,8 +281,18 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
 
   function skipRest() {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    setMode("idle");
+    setMode("working");
     setTimer(0);
+  }
+
+  function pauseSet() {
+    vibrate(30);
+    setMode("paused");
+  }
+
+  function resumeSet() {
+    vibrate(30);
+    setMode("working");
   }
 
   function goTo(idx: number) {
@@ -402,6 +423,14 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
           <p className="text-base text-neutral-500">
             {completedCount}/{total} exercises finished
           </p>
+          {isToday && (
+            <button
+              onClick={resetProgress}
+              className="mt-8 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-semibold text-lg active:scale-95 transition-all"
+            >
+              Restart Session
+            </button>
+          )}
         </div>
       </div>
     );
@@ -427,13 +456,13 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
 
       {/* ── Swipeable exercise card ───────────────────────────── */}
       <div
-        className="flex-1 flex flex-col overflow-hidden select-none"
+        className="flex-1 flex flex-col overflow-hidden select-none min-h-0"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         <div
-          className="flex-1 flex flex-col transition-transform duration-200 ease-out"
+          className="flex-1 flex flex-col transition-transform duration-200 ease-out min-h-0"
           style={{
             transform: `translateX(${swipeDelta}px)`,
             ...(isSwiping ? { transition: "none" } : {}),
@@ -457,65 +486,68 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
           </div>
 
           {/* ── Card content ──────────────────────────────────── */}
-          <div className="flex-1 flex flex-col px-5 pb-4 overflow-y-auto">
-            {/* Exercise header */}
-            <div className="mt-3">
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <span className="text-sm font-mono text-neutral-500">
-                  {activeIdx + 1}/{total}
-                </span>
-                {isDone && (
-                  <span className="text-sm bg-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full font-medium">
-                    Done
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+            {/* Scrollable info area */}
+            <div className="flex-1 overflow-y-auto px-5 min-h-0">
+              {/* Exercise header */}
+              <div className="mt-3">
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  <span className="text-sm font-mono text-neutral-500">
+                    {activeIdx + 1}/{total}
                   </span>
-                )}
+                  {isDone && (
+                    <span className="text-sm bg-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full font-medium">
+                      Done
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-3xl font-bold leading-tight">{exercise.name}</h2>
+                <p className="text-xl text-blue-400 font-semibold mt-1.5">
+                  {exercise.sets} &times; {exercise.reps}
+                </p>
               </div>
-              <h2 className="text-3xl font-bold leading-tight">{exercise.name}</h2>
-              <p className="text-xl text-blue-400 font-semibold mt-1.5">
-                {exercise.sets} &times; {exercise.reps}
+
+              {/* Description */}
+              <p className="text-base text-neutral-400 mt-5 leading-relaxed">
+                {exercise.description}
               </p>
-            </div>
 
-            {/* Description */}
-            <p className="text-base text-neutral-400 mt-5 leading-relaxed">
-              {exercise.description}
-            </p>
-
-            {/* Form tip */}
-            <div className="mt-5 bg-neutral-900 border border-neutral-800 rounded-xl p-4">
-              <p className="text-sm text-blue-400/80 uppercase tracking-wider font-semibold mb-1.5">
-                Form Tip
-              </p>
-              <p className="text-base text-neutral-300 leading-relaxed">{exercise.tip}</p>
-            </div>
-
-            {/* Set progress */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2.5">
-                <span className="text-sm text-neutral-500 uppercase tracking-wider">Sets</span>
-                <span className="text-base font-mono text-neutral-300">
-                  {completedSets} / {exercise.sets}
-                </span>
+              {/* Form tip */}
+              <div className="mt-5 bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+                <p className="text-sm text-blue-400/80 uppercase tracking-wider font-semibold mb-1.5">
+                  Form Tip
+                </p>
+                <p className="text-base text-neutral-300 leading-relaxed">{exercise.tip}</p>
               </div>
-              <div className="flex gap-2">
-                {progress?.sets.map((s, i) => (
-                  <div
-                    key={i}
-                    className={`h-3 flex-1 rounded-full transition-colors ${
-                      s.completed ? "bg-green-500" : "bg-neutral-800"
-                    }`}
-                  />
-                )) ??
-                  Array.from({ length: exercise.sets }, (_, i) => (
-                    <div key={i} className="h-3 flex-1 rounded-full bg-neutral-800" />
-                  ))}
+
+              {/* Set progress */}
+              <div className="mt-6 mb-4">
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-sm text-neutral-500 uppercase tracking-wider">Sets</span>
+                  <span className="text-base font-mono text-neutral-300">
+                    {completedSets} / {exercise.sets}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  {progress?.sets.map((s, i) => (
+                    <div
+                      key={i}
+                      className={`h-3 flex-1 rounded-full transition-colors ${
+                        s.completed ? "bg-green-500" : "bg-neutral-800"
+                      }`}
+                    />
+                  )) ??
+                    Array.from({ length: exercise.sets }, (_, i) => (
+                      <div key={i} className="h-3 flex-1 rounded-full bg-neutral-800" />
+                    ))}
+                </div>
               </div>
             </div>
 
-            {/* Timer area */}
-            <div className="mt-auto pt-6">
+            {/* Fixed timer area - always visible */}
+            <div className="shrink-0 px-5 pb-2">
               {mode === "resting" ? (
-                <div className="text-center py-6">
+                <div className="text-center py-4">
                   <p className="text-sm text-neutral-500 uppercase tracking-wider mb-2">
                     Rest
                   </p>
@@ -526,12 +558,12 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
                     Next: Set {currentSet} of {exercise.sets}
                   </p>
                 </div>
-              ) : mode === "working" ? (
-                <div className="text-center py-6">
+              ) : mode === "working" || mode === "paused" ? (
+                <div className="text-center py-4">
                   <p className="text-sm text-neutral-500 uppercase tracking-wider mb-2">
-                    Working
+                    {mode === "paused" ? "Paused" : "Working"}
                   </p>
-                  <div className="text-7xl font-mono font-bold text-blue-400 pulse-active">
+                  <div className={`text-7xl font-mono font-bold ${mode === "paused" ? "text-amber-400" : "text-blue-400 pulse-active"}`}>
                     {fmt(timer)}
                   </div>
                   <p className="text-sm text-neutral-500 mt-3">
@@ -605,22 +637,53 @@ function WorkoutApp({ username, onLogout }: { username: string; onLogout: () => 
               onClick={startSet}
               className="w-full py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-bold text-xl active:scale-[0.97] transition-all"
             >
-              {completedSets === 0 ? "Start Set 1" : `Start Set ${currentSet}`}
+              {completedSets === 0 ? "Start Set 1" : `Continue Set ${currentSet}`}
             </button>
           ) : mode === "working" ? (
-            <button
-              onClick={completeSet}
-              className="w-full py-4 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-xl active:scale-[0.97] transition-all"
-            >
-              Done
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={pauseSet}
+                className="py-4 px-5 bg-neutral-800 hover:bg-neutral-700 rounded-xl font-semibold text-lg active:scale-[0.97] transition-all text-neutral-300"
+              >
+                Pause
+              </button>
+              <button
+                onClick={completeSet}
+                className="flex-1 py-4 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-xl active:scale-[0.97] transition-all"
+              >
+                Done
+              </button>
+            </div>
+          ) : mode === "paused" ? (
+            <div className="flex gap-3">
+              <button
+                onClick={resumeSet}
+                className="py-4 px-5 bg-blue-500 hover:bg-blue-600 rounded-xl font-semibold text-lg active:scale-[0.97] transition-all"
+              >
+                Resume
+              </button>
+              <button
+                onClick={completeSet}
+                className="flex-1 py-4 bg-green-600 hover:bg-green-700 rounded-xl font-bold text-xl active:scale-[0.97] transition-all"
+              >
+                Done
+              </button>
+            </div>
           ) : (
-            <button
-              onClick={skipRest}
-              className="w-full py-4 bg-neutral-800 hover:bg-neutral-700 rounded-xl font-semibold text-xl active:scale-[0.97] transition-all"
-            >
-              Skip Rest →
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setTimer((t) => t + 20)}
+                className="py-4 px-5 bg-violet-500/15 hover:bg-violet-500/25 rounded-xl font-semibold text-lg active:scale-[0.97] transition-all text-violet-400 border border-violet-500/20"
+              >
+                +20s
+              </button>
+              <button
+                onClick={skipRest}
+                className="flex-1 py-4 bg-neutral-800 hover:bg-neutral-700 rounded-xl font-semibold text-xl active:scale-[0.97] transition-all"
+              >
+                Skip Rest →
+              </button>
+            </div>
           )}
 
           <p className="text-center text-sm text-neutral-700 mt-2">
@@ -666,12 +729,12 @@ function TopBar({
       <div className="flex items-center justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-bold text-blue-400">Kaam Chlra</h1>
+            <h1 className="text-lg font-bold text-blue-400">Stay Fit</h1>
             {saving && (
               <span className="text-sm text-neutral-600 animate-pulse">saving</span>
             )}
           </div>
-          <p className="text-sm text-neutral-500 truncate">Hey, {username}</p>
+          <p className="text-sm text-neutral-300 truncate">Hey, {username}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -682,7 +745,7 @@ function TopBar({
           </button>
           <button
             onClick={onLogout}
-            className="text-sm text-neutral-600 hover:text-neutral-400"
+            className="text-sm text-neutral-400 hover:text-neutral-200"
           >
             Exit
           </button>
@@ -711,7 +774,7 @@ function TopBar({
 
       {workoutName && total != null && completedCount != null && pct != null && (
         <div className="mt-2">
-          <div className="flex justify-between text-sm text-neutral-500 mb-1">
+          <div className="flex justify-between text-sm text-neutral-300 mb-1">
             <span>{workoutName}</span>
             <span>
               {completedCount}/{total}

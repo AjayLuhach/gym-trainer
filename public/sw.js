@@ -1,11 +1,10 @@
-const CACHE_NAME = "trainer-v2";
+const CACHE_NAME = "trainer-v3";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  // Clear old caches
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
@@ -14,23 +13,20 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Network-first strategy for API calls, cache-first for static assets
-  if (event.request.url.includes("/api/")) {
-    event.respondWith(fetch(event.request));
-  } else {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        return (
-          cached ||
-          fetch(event.request).then((response) => {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, clone);
-            });
-            return response;
-          })
-        );
+  // Skip non-GET requests
+  if (event.request.method !== "GET") return;
+
+  // Network-first for everything: always try fresh, fall back to cache offline
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Cache successful responses for offline fallback
+        if (response.ok && !event.request.url.includes("/api/")) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
       })
-    );
-  }
+      .catch(() => caches.match(event.request))
+  );
 });
