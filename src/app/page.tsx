@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getWorkouts,
+  isLevel,
   type DayWorkout,
   type Level,
   LEVEL_LABELS,
@@ -153,7 +154,8 @@ function WorkoutApp({
 }) {
   const [level, setLevel] = useState<Level>(() => {
     try {
-      return (localStorage.getItem("trainer_level") as Level) || "beginner";
+      const stored = localStorage.getItem("trainer_level");
+      return isLevel(stored) ? stored : "beginner";
     } catch {
       return "beginner";
     }
@@ -857,7 +859,7 @@ function TopBar({
   total?: number;
   pct?: number;
 }) {
-  const LEVELS: Level[] = ["beginner", "intermediate", "advanced"];
+  const LEVELS: Level[] = ["beginner", "strength"];
   return (
     <header className="shrink-0 bg-neutral-900/95 backdrop-blur border-b border-neutral-800 px-4 py-3">
       <div className="flex items-center justify-between">

@@ -1,346 +1,287 @@
 import type { DayWorkout } from "./workouts";
 
 // ═══════════════════════════════════════════════════════════════════════════
-// STRENGTH — hypertrophy focused. For when calorie surplus begins.
-// Slow tempos, high time under tension, progressive overload with bands.
-// 5 training days, 2 rest days for recovery. Less cardio, more muscle.
+// STRENGTH — hypertrophy plan for a year of progression with bands only.
+// 5 exercises per day, 3 sets each. 2 lower days, push, pull, dedicated arms.
+// Equipment: resistance bands of varying levels + a mat. Nothing else.
+// Progress by upgrading band level when the top of the rep range is hit
+// on every set with strict form. Tempo and pause cues create the pump.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const strengthWorkouts: Record<string, DayWorkout> = {
   Monday: {
-    name: "Push — Chest, Shoulders, Triceps",
+    name: "Glutes & Hamstrings",
     isRest: false,
     exercises: [
       {
-        name: "Decline Push-Ups (Feet Elevated)",
-        sets: 4,
-        reps: "15",
-        description: "Feet on couch/step for increased chest and shoulder load. Key mass builder.",
-        tip: "Feet elevated, lower chest to floor. 2 seconds down, push up. Full range.",
-      },
-      {
-        name: "Diamond Push-Ups",
-        sets: 4,
-        reps: "12",
-        description: "Close-grip push-up for triceps and inner chest. Builds arm thickness.",
-        tip: "Hands together. Elbows stay close to body. If too hard, do from knees.",
-      },
-      {
-        name: "Band Chest Press (5s Tempo)",
-        sets: 4,
-        reps: "15",
-        description: "Ultra-slow chest press — 5 seconds each way. Maximum time under tension.",
-        tip: "No lockout. Constant tension. If it doesn't burn by rep 10, go slower.",
-      },
-      {
-        name: "Pike Push-Ups (Elevated Feet)",
-        sets: 4,
-        reps: "12",
-        description: "Feet elevated pike push-up for maximum shoulder overload.",
-        tip: "Feet on a step. Head between hands. Full range. This builds shoulder mass.",
-      },
-      {
-        name: "Band Lateral Raise (Slow)",
+        name: "Banded Hip Thrust (Floor)",
         sets: 3,
-        reps: "15",
-        description: "Slow lateral raises — 3 seconds up, 3 seconds down. Shoulder cap builder.",
-        tip: "Stand on band, raise to shoulder height. Control every inch. No swinging.",
+        reps: "12",
+        description:
+          "Primary glute builder. Lying on your back, drive hips up against a band looped across the hips and pinned under your feet. Highest direct glute activation of any band exercise.",
+        tip: "Lie on your back, knees bent, feet flat. Loop a heavy band across your hip crease and trap each end firmly under the same-side foot. Drive hips up until your body forms a straight line from shoulder to knee. Squeeze glutes hard for a 2-second hold at the top, lower over 3 seconds. Push knees slightly out — do not let them cave in. Set 1: light band. Set 2: medium. Set 3: heaviest band where 12 is genuinely hard. Move up a level when you hit 12 strict reps on all 3 sets.",
       },
       {
-        name: "Band Overhead Triceps Extension",
-        sets: 4,
-        reps: "15",
-        description: "Overhead triceps extension for arm mass. Full stretch, full squeeze.",
-        tip: "Anchor low, extend overhead. Keep elbows close to ears. Feel the stretch.",
+        name: "Banded Romanian Deadlift",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Hamstring lengthener under load. Slow eccentric stretches the hamstrings while loaded — the strongest known driver of hamstring growth.",
+        tip: "Stand on the centre of the band, grip the handles at thigh height. Push hips straight back (not down), keeping a soft knee bend, until you feel a deep stretch in the hamstrings. Lower over 3 seconds, drive up over 1 second by squeezing glutes. Back stays flat throughout — never round. Exhale at the top. Set 1: light. Set 2: medium. Set 3: heavy. Move up when you hit 12 clean reps on all sets.",
       },
       {
-        name: "Band Triceps Pushdown",
-        sets: 4,
-        reps: "15",
-        description: "Pushdown for triceps isolation and definition.",
-        tip: "Anchor high, push down and squeeze 2 seconds. Slow negatives.",
+        name: "Banded Single-Leg Glute Bridge",
+        sets: 3,
+        reps: "12 each leg",
+        description:
+          "Unilateral glute work. Each side lifts independently, exposing and correcting side-to-side imbalances and forcing the working glute to do all the work.",
+        tip: "Lie on your back with a band looped above the knees. One foot planted, opposite knee held to chest. Drive hip up until the body is a straight line from shoulder to knee. Squeeze the working glute hard for 2 seconds at the top, lower over 2 seconds. Keep hips level — if they tilt toward the lifted leg, slow down. Exhale on the drive up.",
+      },
+      {
+        name: "Banded Lying Hamstring Curl",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Direct hamstring isolation. Curls the heel toward the glute against band tension — the only true knee-flexion movement available without machines.",
+        tip: "Lie face down on the mat. Loop a band around one ankle and anchor the other end under a heavy piece of furniture (couch leg) or your other foot. Curl the heel toward the glute over 2 seconds, squeeze hard at the top for 1 second, lower over 3 seconds. Keep hips pressed into the mat — do not let them lift. Switch legs each set or do all reps on one side then the other.",
+      },
+      {
+        name: "Banded Standing Glute Kickback",
+        sets: 3,
+        reps: "15 each leg",
+        description:
+          "Glute max isolation finisher. Kicks the leg straight back against band resistance, fully shortening the glute. Pure pump work to close out the day.",
+        tip: "Loop band around ankles, stand on one foot holding a wall for balance. Kick the other leg straight back, squeeze the glute hard for 1 second at full extension, return slowly. Keep your back flat — if you lean forward to kick higher, you have lost the glute. Small range with full squeeze beats big range with no contraction. Move up a band level when 15 strict reps is easy on both legs.",
       },
     ],
   },
   Tuesday: {
-    name: "Legs & Glutes — Heavy",
+    name: "Push — Chest, Shoulders, Triceps",
     isRest: false,
     exercises: [
       {
-        name: "Band Squats (3s Pause)",
-        sets: 5,
-        reps: "15",
-        description: "Deep squats with 3-second pause at bottom. Maximum glute time under tension.",
-        tip: "Full depth, count 3 at the bottom. Push knees out against band. Don't bounce.",
+        name: "Push-Ups (Band Across Back)",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Compound chest builder. Loop a band across the upper back and under each hand to add resistance to the press. Targets chest, front delts, and triceps in one move.",
+        tip: "Place the band across your upper back, ends pinned under each palm. Lower over 2 seconds until chest nearly touches the floor, press up in 1 second. Body straight from head to heels — no sagging hips, no hiked-up butt. If 12 is easy with the heaviest band you have, elevate your feet on a step. If 10 is too hard, drop the band and do regular push-ups.",
       },
       {
-        name: "Bulgarian Split Squat",
-        sets: 4,
-        reps: "12 each leg",
-        description: "Rear foot on couch/step. Single-leg mass builder. Glutes and quads.",
-        tip: "Torso upright, lower until thigh is parallel. Drive through heel. Slow descent.",
+        name: "Banded Chest Press (3-1-3 Tempo)",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Slow chest press with constant band tension through the entire range. The 3-second eccentric and concentric maximises time under tension — the strongest hypertrophy signal you can create with bands.",
+        tip: "Anchor the band behind you at chest height (door anchor or wedge it in a closed door). Press forward over 3 seconds, hold for 1 second at full extension while squeezing the pecs, return over 3 seconds. Do not lock out — keep tension on the chest throughout. Exhale during the press. Set 1: light band. Set 2: medium. Set 3: heaviest band where you reach failure around rep 10. Move up when you hit 12 on all sets.",
       },
       {
-        name: "Single-Leg Glute Bridge (Band + Pulse)",
-        sets: 4,
-        reps: "12 + 8 pulses each",
-        description: "Single-leg bridge with band and pulses at top. Glute growth guaranteed.",
-        tip: "Band around thighs. 12 full reps, then 8 pulses at the top without dropping.",
+        name: "Banded Overhead Press",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Shoulder compound. Pressing overhead against band tension targets the front and medial deltoids and gives the upper chest secondary work.",
+        tip: "Stand on the centre of the band, handles at shoulder height. Press straight up over 2 seconds, lower over 3 seconds. Stop just short of lockout — keep tension on the delts. Brace the core hard; if the lower back arches, the band is too heavy. Exhale on the press. Set 1: light. Set 2: medium. Set 3: heavy. Move up when you complete 12 strict reps on all sets.",
       },
       {
-        name: "Sumo Squat (Pause + Pulse)",
-        sets: 4,
-        reps: "15 + 10 pulses",
-        description: "Wide squats with pause reps followed by pulses. Inner thigh and glute burner.",
-        tip: "15 full reps with 2s pause, then 10 pulses at the bottom. Don't stand up.",
+        name: "Banded Lateral Raise (Slow)",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Medial delt isolation — the muscle responsible for shoulder cap and width. Slow tempo is essential because the delts are a small muscle and heavy momentum kills the stimulus.",
+        tip: "Stand on the centre of the band, handles at the sides. Raise arms straight out to shoulder height over 3 seconds, lower over 3 seconds. Lead with the elbows, not the wrists — imagine pouring water from a pitcher. Do not shrug the traps. Stop at shoulder height; going higher recruits traps and removes load from the delts. Set 1: light. Set 2: medium. Set 3: heavy.",
       },
       {
-        name: "Band Good Mornings (Tempo)",
-        sets: 4,
-        reps: "15",
-        description: "Slow hinge — 3 seconds down, squeeze up. Hamstring and glute builder.",
-        tip: "Band around neck, hinge at hips. Full stretch at bottom. Squeeze glutes at top.",
-      },
-      {
-        name: "Calf Raises (Slow Tempo)",
-        sets: 4,
-        reps: "20",
-        description: "3 seconds up, 3 seconds down. Builds calf mass with time under tension.",
-        tip: "Full range. Squeeze hard at top for 2 seconds. Slow descent.",
+        name: "Banded Overhead Triceps Extension",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Long-head triceps isolation in the fully stretched position. The long head is the largest of the three triceps heads and grows best when loaded overhead.",
+        tip: "Anchor the band low behind you (under a door or a heavy chair leg). Face away, arms overhead, hands gripping the band. Extend from behind your head to full lockout, squeeze for 1 second, lower over 3 seconds into a deep stretch. Keep elbows pointed forward and tucked close to your ears — they should not flare out. Inhale on the stretch, exhale on the extension.",
       },
     ],
   },
   Wednesday: {
-    name: "Pull — Back & Biceps",
+    name: "Back & Biceps",
     isRest: false,
     exercises: [
       {
-        name: "Band Seated Row (Pause)",
-        sets: 5,
-        reps: "15",
-        description: "Row with 2-second squeeze at peak contraction. Builds back thickness.",
-        tip: "Pull and hold 2 seconds. Squeeze shoulder blades until they cramp.",
-      },
-      {
-        name: "Band Face Pull",
-        sets: 4,
-        reps: "15",
-        description: "Face pulls for rear delts and rotator cuff. Posture and shoulder health.",
-        tip: "Pull high, external rotate, hold 1 second. Every rep counts.",
-      },
-      {
-        name: "Band Bent-Over Row (Wide)",
-        sets: 4,
-        reps: "15",
-        description: "Wide grip rows for upper back width.",
-        tip: "Grip band wider than usual. Pull to upper chest. Full squeeze at top.",
-      },
-      {
-        name: "Band Deadlift (Tempo)",
-        sets: 4,
-        reps: "15",
-        description: "Slow tempo deadlift — 3 seconds down, explosive up. Posterior chain mass.",
-        tip: "Control the descent. Explode up squeezing glutes. Flat back throughout.",
-      },
-      {
-        name: "Band Bicep Curl (21s)",
-        sets: 4,
-        reps: "21 (7+7+7)",
-        description: "7 bottom-half, 7 top-half, 7 full curls. No rest between. Bicep growth stimulus.",
-        tip: "Don't drop the band between the 7s. Push through the burn.",
-      },
-      {
-        name: "Band Hammer Curl (Slow)",
-        sets: 4,
-        reps: "15",
-        description: "Slow hammer curls — 3 seconds up, 3 seconds down. Forearm and brachialis.",
-        tip: "Neutral grip. No swinging. Feel every second of every rep.",
-      },
-      {
-        name: "Chin Tucks",
+        name: "Banded Bent-Over Row (Wide Grip)",
         sets: 3,
-        reps: "15",
-        description: "Retract chin straight back, hold 2 seconds. Tightens under-chin area.",
-        tip: "Pull chin straight back. Hold 2s, release. Don't tilt head.",
+        reps: "10-12",
+        description:
+          "Upper-back compound. Wide-grip row pulled to the upper chest hits the lats, rhomboids, and mid-traps — the muscles that build a thick, V-tapered back.",
+        tip: "Stand on the band, hinge at the hips to roughly 45 degrees, grip the band wider than shoulder-width. Pull the band toward your upper chest, driving elbows out to the sides. Squeeze shoulder blades for 1 second at the top, lower over 3 seconds. Keep lower back flat — if it rounds, raise your torso angle slightly. Set 1: light. Set 2: medium. Set 3: heaviest band you can row with strict form.",
       },
       {
-        name: "Lying Neck Curl",
+        name: "Banded Seated Row (Squeeze Hold)",
         sets: 3,
-        reps: "15",
-        description: "Lie on back, curl chin toward chest. Targets front neck and under-chin.",
-        tip: "Tuck chin first, lift head. 2 seconds up, 2 seconds down.",
+        reps: "10-12",
+        description:
+          "Mid-back thickness builder. The 2-second squeeze at the end of each rep maximises rhomboid and mid-trap activation in a position bodyweight rows cannot match.",
+        tip: "Sit on the floor, legs extended, band looped around the soles of your feet. Pull elbows straight back along your ribs, squeeze shoulder blades together hard for 2 seconds at the end of each rep. Keep chest tall — do not round forward on the return. Inhale on the extension, exhale on the pull. Set 1: light. Set 2: medium. Set 3: heavy — aim for failure at 10. Move up when you hit 12 on all sets.",
       },
       {
-        name: "Side Neck Flexion",
-        sets: 2,
-        reps: "15 each side",
-        description: "Ear to shoulder against hand resistance. Builds neck and jawline.",
-        tip: "Press hand against side of head, resist with neck. Never jerk.",
+        name: "Banded Straight-Arm Pulldown",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Lower-lat isolation. With straight arms and the band anchored high, this becomes a pure shoulder-extension move that hits the lats without bicep involvement — sculpts the lower-lat insertion just above the waist.",
+        tip: "Anchor the band high (over a door, around a sturdy hook). Step back so the band has tension, lean forward slightly, arms straight out toward the anchor. Pull the band down to your thighs over 2 seconds with arms straight, squeeze the lats hard at the bottom for 1 second, return over 3 seconds. Slight bend in elbows is fine — do not curl the band down. Light to medium band; this is a feel exercise, not a strength one.",
+      },
+      {
+        name: "Banded Good Morning",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Lower-back and erector spinae builder. The hip hinge with the band loaded across the upper back forces the lower-back erectors to fight extension — the strongest direct lower-back move available with bands.",
+        tip: "Loop the band around the back of your neck and shoulders, standing on the other end with both feet. Slight knee bend, soft brace in the core. Hinge at the hips, lowering torso until you feel a deep stretch in the hamstrings and load in the lower back. Drive hips forward to return. Lower over 3 seconds, rise over 1 second. Back stays flat throughout — never round. Exhale at the top. Set 1: light. Set 2: medium. Set 3: heavy.",
+      },
+      {
+        name: "Banded Bicep Curl (Slow)",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Bicep hypertrophy work. Slow eccentric is the highest-yield variable for arm growth — the muscle is forced to resist the stretch under tension.",
+        tip: "Stand on the centre of the band, palms forward. Curl over 2 seconds, squeeze hard at the top for 1 second, lower over 3 seconds. Keep elbows pinned to your sides — if they drift forward, you are using momentum. Stop just short of the bottom to keep tension on the biceps. Set 1: light. Set 2: medium. Set 3: heavy. Move up a band when 12 reps is clean on all sets.",
       },
     ],
   },
   Thursday: {
-    name: "Rest & Recovery",
+    name: "Quads & Glute Med",
+    isRest: false,
+    exercises: [
+      {
+        name: "Banded Goblet Squat",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Primary quad and glute compound. Stand on the band and grip both handles at chest height — band tension peaks at the top of the squat where bodyweight squats lose tension.",
+        tip: "Stand on the centre of the band, feet shoulder-width, toes slightly out. Pull the handles up to chest height and hold them there. Squat to full depth (hip crease below knee), drive up. Lower over 3 seconds, push up over 1 second. Keep chest tall, knees tracking over toes. Exhale on the drive up. Set 1: light. Set 2: medium. Set 3: heavy. Move up a band when you hit 12 clean reps on all sets.",
+      },
+      {
+        name: "Bulgarian Split Squat (Banded)",
+        sets: 3,
+        reps: "10 each leg",
+        description:
+          "Single-leg quad and glute builder. The rear foot elevation forces the front leg to do almost all the work — one of the highest-output lower-body exercises available without weights.",
+        tip: "Rear foot laces-down on a couch or step. Loop a band under the front foot and grip both ends at shoulder height. Keep torso upright. Lower over 3 seconds until the rear knee nearly touches the floor, drive up over 1 second through the front heel. The front shin can travel slightly forward — this is the cue for quad loading. Alternate legs between sets so each leg gets equal rest.",
+      },
+      {
+        name: "Banded Sumo Squat (2s Pause)",
+        sets: 3,
+        reps: "12",
+        description:
+          "Wide-stance squat hitting adductors, inner glutes, and quads. The pause at the bottom kills the stretch reflex and forces the muscles to do all the lifting from a dead stop.",
+        tip: "Feet wider than shoulders, toes turned out 30-45 degrees. Stand on the band, grip the handles at shoulder height. Lower until thighs are parallel, hold 2 seconds at the bottom, drive up. Keep chest upright — if you lean forward, the stance is too wide. Push knees out hard against an above-knee band if you have one. Set 1: light. Set 2: medium. Set 3: heavy.",
+      },
+      {
+        name: "Banded Lateral Walks",
+        sets: 3,
+        reps: "15 steps each direction",
+        description:
+          "Glute medius isolation — the side glute responsible for hip stability and the rounded shape from the side view. Often undertrained relative to the glute max.",
+        tip: "Loop band above knees (heavier) or around ankles (harder). Sink into a quarter squat and stay low throughout. Step laterally with control — small, deliberate steps with constant band tension. Do not let the trail leg snap toward the lead leg; walk it in slowly. 15 steps right, then 15 steps left = 1 set. Move up a band when both directions feel easy.",
+      },
+      {
+        name: "Banded Calf Raise (Slow)",
+        sets: 3,
+        reps: "15-20",
+        description:
+          "Slow-tempo calf raises for gastrocnemius hypertrophy. Calves respond best to high time under tension because their fibre composition is endurance-biased.",
+        tip: "Stand on the edge of a step (heels hanging off) holding a band looped under the ball of one foot, gripped at hip height. Rise over 2 seconds, hold the peak contraction for 2 seconds, lower over 3 seconds into a full stretch below the step. Do not bounce. Both legs at once is fine — for more challenge, do single-leg with the band on one side.",
+      },
+    ],
+  },
+  Friday: {
+    name: "Arms — Biceps, Triceps, Forearms",
+    isRest: false,
+    exercises: [
+      {
+        name: "Banded Bicep Curl — 21s Method",
+        sets: 3,
+        reps: "21 (7+7+7)",
+        description:
+          "Mechanical drop set hitting the biceps through every portion of the strength curve without rest. 7 bottom-half reps, 7 top-half reps, 7 full-range reps. Brutal pump in one set.",
+        tip: "Stand on the centre of the band, palms forward. First 7: curl from full extension to halfway (forearms parallel to floor). Next 7: from halfway to full contraction. Final 7: full range, full extension to full contraction. Do not release tension between segments. Pick a band where the final 7 full-range reps are genuinely hard. Set 1: light. Set 2: medium. Set 3: medium-heavy. Move up when you complete all 21 reps cleanly on the heaviest band.",
+      },
+      {
+        name: "Banded Hammer Curl",
+        sets: 3,
+        reps: "10-12",
+        description:
+          "Neutral-grip curl targeting the brachialis (deep upper-arm muscle that pushes the biceps up) and brachioradialis (largest forearm muscle). The single highest-yield move for thicker arms.",
+        tip: "Stand on the band, palms facing each other (thumbs up). Curl over 2 seconds, squeeze for 1 second at the top, lower over 3 seconds. Keep elbows pinned to your sides — if they drift forward, you are using momentum and losing the brachialis. Stop just short of the bottom to keep tension. Set 1: light. Set 2: medium. Set 3: heavy.",
+      },
+      {
+        name: "Banded Triceps Pushdown",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Lateral and medial triceps head isolation. With the band anchored high, this hits the side and inner triceps — different from Tuesday's overhead extension which targets the long head.",
+        tip: "Anchor the band high (over a door, around a sturdy hook). Stand facing the anchor, elbows pinned tight to your sides at 90 degrees. Push the band down to full lockout over 2 seconds, squeeze the triceps hard for 1 second, return over 3 seconds. Elbows do not move — only the forearms travel. If your elbows drift forward, the band is too heavy. Set 1: light. Set 2: medium. Set 3: heavy.",
+      },
+      {
+        name: "Banded Triceps Kickback",
+        sets: 3,
+        reps: "12-15 each arm",
+        description:
+          "Triceps lateral head finisher. The bent-over position fully shortens the triceps at the top of each rep, creating peak contraction that builds the horseshoe shape on the back of the arm.",
+        tip: "Stand on one end of the band, hinge forward at the hips to roughly 45 degrees with a flat back. Upper arm parallel to the floor and pinned to your side. Extend the forearm back to full lockout over 1 second, squeeze hard for 2 seconds, return over 2 seconds. Only the forearm moves — the upper arm stays locked. Switch arms each set or do all reps on one side then the other.",
+      },
+      {
+        name: "Banded Wrist Curl Superset",
+        sets: 3,
+        reps: "15 + 15 each direction",
+        description:
+          "Forearm flexor and extensor pair. Wrist curls (palm up) build the inner forearm, reverse wrist curls (palm down) build the outer forearm — together they grow the full forearm and strengthen grip.",
+        tip: "Sit on the mat, forearms resting on your thighs, palms up, holding the band under both feet. Curl the wrist up over 1 second, squeeze for 1 second, lower over 2 seconds — do 15 reps. Without rest, flip palms down (reverse wrist curl) and do 15 more reps. That is one set. Only the wrists move; forearms stay glued to your thighs. Reverse curls will need a lighter band — the extensors are weaker than the flexors.",
+      },
+    ],
+  },
+  Saturday: {
+    name: "Stretch & Chest",
     isRest: false,
     exercises: [
       {
         name: "Full-Body Band Stretch",
         sets: 1,
-        reps: "12 min",
-        description: "Deep stretching with band. Focus on muscles trained Mon-Wed.",
-        tip: "Hold each stretch 30+ seconds. Breathe into tight spots.",
+        reps: "10 min",
+        description:
+          "Band-assisted static stretching for the muscle groups trained Mon-Fri. Bands let you gently increase range without forcing — key for recovery after a heavy 5-day block.",
+        tip: "Hold each stretch for 30-45 seconds. Hit hamstrings, hip flexors, glutes, lats, pecs, and shoulders in that order. Use the band to gently deepen each stretch — never force. Breathe slowly into the position. Prioritise whichever area feels tightest from the week.",
       },
       {
         name: "Downward Dog to Cobra Flow",
-        sets: 3,
-        reps: "10",
-        description: "Spine mobility flow. Essential for recovery between heavy training days.",
-        tip: "Slow transitions. Feel the stretch in each position.",
-      },
-      {
-        name: "Light Shadowboxing",
-        sets: 2,
-        reps: "2 min rounds",
-        description: "Easy boxing to stay loose. Not a workout — just movement.",
-        tip: "Light and easy. Focus on movement quality, not intensity.",
-      },
-      {
-        name: "Chin Tuck Hold",
-        sets: 3,
-        reps: "25s hold",
-        description: "Static chin tuck for neck flexor endurance.",
-        tip: "Tuck chin back, hold. Breathe normally.",
-      },
-      {
-        name: "Tongue Press Neck Curl",
-        sets: 2,
-        reps: "15",
-        description: "Tongue on roof of mouth, nod head down. Activates under-chin muscles.",
-        tip: "Tongue pressed up the entire time. Slow controlled nods.",
-      },
-      {
-        name: "Jaw Release",
         sets: 2,
         reps: "10",
-        description: "Wide mouth, chewing motion, hold open. Tones jawline.",
-        tip: "Exaggerate the motion. Hold open 3 seconds.",
+        description:
+          "Yoga flow that opens the chest, shoulders, and spine. Cobra extends the thoracic spine and stretches the pecs — perfect prep for the chest work that follows.",
+        tip: "From downward dog, shift forward through plank into cobra, then press back. Each transition takes 3-4 seconds. In downward dog, push the floor away and press heels toward the ground. In cobra, squeeze glutes, open the chest, and pull shoulder blades down and back. Move with breath — exhale into dog, inhale into cobra.",
       },
       {
-        name: "20-Min Walk",
+        name: "Banded Chest Fly",
+        sets: 3,
+        reps: "12-15",
+        description:
+          "Chest isolation in the fully stretched position. The fly hits the chest in a way the press cannot — it loads the pec at maximum length, the strongest hypertrophy stimulus for chest growth.",
+        tip: "Anchor the band behind you at chest height. Stand facing away, arms out wide at shoulder height with a soft elbow bend. Bring your hands together in front of your chest in a hugging arc over 2 seconds, squeeze pecs hard for 1 second, return over 3 seconds into a deep stretch — feel the pecs lengthen. Do not change the elbow angle during the rep. Light to medium band only — this is a feel exercise. Set 1: light. Set 2: light-medium. Set 3: medium.",
+      },
+      {
+        name: "Push-Ups (High Rep, Easy Pace)",
+        sets: 3,
+        reps: "10-15",
+        description:
+          "Bodyweight push-up at a comfortable pace for a second weekly chest stimulus. Stop 2-3 reps short of failure — this is a pump session, not a peak performance day.",
+        tip: "Standard hand position, body straight from head to heels. Lower over 2 seconds, press up in 1 second. Stop with 2-3 reps in the tank — leaving fuel in the tank is the point. If 15 strict reps is easy, slow the eccentric to 4 seconds rather than going to failure. No band loading needed today.",
+      },
+      {
+        name: "Banded Pec & Shoulder Stretch",
         sets: 1,
-        reps: "20 min",
-        description: "Easy walk for active recovery and blood flow.",
-        tip: "Comfortable pace. Let your body recover.",
-      },
-    ],
-  },
-  Friday: {
-    name: "Upper Body Compound",
-    isRest: false,
-    exercises: [
-      {
-        name: "Push-Ups (Wide + Standard + Diamond)",
-        sets: 4,
-        reps: "15 (5 each grip)",
-        description: "Mixed grip push-ups hitting all areas of chest and triceps in one set.",
-        tip: "5 wide, 5 standard, 5 diamond = 1 set. No rest between grip changes.",
-      },
-      {
-        name: "Band Chest Press (Pause)",
-        sets: 3,
-        reps: "15",
-        description: "Press with 2-second hold at full extension. Extra chest squeeze.",
-        tip: "Pause and squeeze at the end of each rep. Constant tension.",
-      },
-      {
-        name: "Band Seated Row (Tempo)",
-        sets: 4,
-        reps: "15",
-        description: "Slow tempo row — 3 seconds each way. Back width and thickness.",
-        tip: "Slow pull, squeeze 2s, slow release. Feel every rep.",
-      },
-      {
-        name: "Band Overhead Press (Slow)",
-        sets: 4,
-        reps: "15",
-        description: "Slow overhead press for shoulder mass. 3 seconds up, 3 seconds down.",
-        tip: "Stand on band. Press overhead slowly. Keep core tight, don't arch.",
-      },
-      {
-        name: "Band Bicep Curl",
-        sets: 3,
-        reps: "15",
-        description: "Standard curls for bicep volume. Second hit this week.",
-        tip: "Stand on band. Slow controlled curls. Squeeze at top.",
-      },
-      {
-        name: "Band Overhead Triceps Extension",
-        sets: 3,
-        reps: "15",
-        description: "Overhead triceps for second hit this week. Arm mass builder.",
-        tip: "Full stretch at bottom, full squeeze at top.",
-      },
-      {
-        name: "Band Face Pull",
-        sets: 3,
-        reps: "15",
-        description: "Face pulls for shoulder health and rear delt volume.",
-        tip: "Pull high, rotate out. Keeps shoulders healthy for all the pressing.",
-      },
-    ],
-  },
-  Saturday: {
-    name: "Legs & Core — Volume",
-    isRest: false,
-    exercises: [
-      {
-        name: "Band Squats (Tempo)",
-        sets: 4,
-        reps: "18",
-        description: "Slow tempo squats — 3 seconds down, 2 seconds up. Leg mass builder.",
-        tip: "Band around thighs. Slow descent, controlled rise. Feel every rep.",
-      },
-      {
-        name: "Bulgarian Split Squat (Tempo)",
-        sets: 4,
-        reps: "12 each leg",
-        description: "Slow single-leg squats. Second leg day for maximum growth stimulus.",
-        tip: "3 seconds down, push up. This is where legs grow.",
-      },
-      {
-        name: "Band Lateral Walk (Deep)",
-        sets: 3,
-        reps: "20 each side",
-        description: "Deep quarter-squat lateral walk for glute medius growth.",
-        tip: "Stay as low as possible. Wide steps. Never let feet come together.",
-      },
-      {
-        name: "Single-Leg Glute Bridge",
-        sets: 4,
-        reps: "15 each",
-        description: "Single-leg bridge for unilateral glute growth. Second hit this week.",
-        tip: "Drive hips high, squeeze 2 seconds. Don't rush.",
-      },
-      {
-        name: "Side Plank + Hip Dip",
-        sets: 3,
-        reps: "12 each side",
-        description: "Side plank with hip dips for obliques and core strength.",
-        tip: "Drop hip toward floor, raise back up. Control the movement.",
-      },
-      {
-        name: "Plank Hold",
-        sets: 3,
-        reps: "60s",
-        description: "Plank for core endurance. Supports all heavy lifts.",
-        tip: "Stay rigid. Squeeze everything. Don't let form break.",
-      },
-      {
-        name: "Band Good Mornings",
-        sets: 3,
-        reps: "15",
-        description: "Hip hinge for hamstring volume. Second hit this week.",
-        tip: "Slow descent, squeeze glutes at top. Full range of motion.",
+        reps: "45s each side",
+        description:
+          "Final chest stretch to wind down. Holding the loaded chest stretch counter-balances all the pressing of the week and helps maintain shoulder mobility.",
+        tip: "Anchor the band at chest height. Hold one end with one arm extended out to the side, slightly behind your body. Rotate your torso away from the anchor so you feel a deep stretch through the front of the shoulder and pec. Hold for 45 seconds, breathing slowly. Switch sides. Should feel relieving, not painful.",
       },
     ],
   },

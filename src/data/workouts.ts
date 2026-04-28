@@ -1,5 +1,4 @@
 import { beginnerWorkouts } from "./beginner";
-import { athleticWorkouts } from "./athletic";
 import { strengthWorkouts } from "./strength";
 
 export interface Exercise {
@@ -17,29 +16,32 @@ export interface DayWorkout {
   exercises: Exercise[];
 }
 
-export type Level = "beginner" | "intermediate" | "advanced";
+export type Level = "beginner" | "strength";
 
 export const LEVEL_LABELS: Record<Level, string> = {
   beginner: "Beginner",
-  intermediate: "Athletic",
-  advanced: "Strength",
+  strength: "Strength",
 };
 
 // ─── All workouts by level ─────────────────────────────────────────────────
-// Beginner: Balanced foundation (her current ~4-month level).
-// Athletic: Combat speed, kick power, agility, flexibility — high activity, great for fat loss.
-// Strength: Hypertrophy focused — slow tempos, high TUT, 2 rest days, for when surplus eating starts.
+// Beginner: Balanced foundation — push-ups, basic combos, 3 sets, full body.
+// Strength: Hypertrophy plan — 5 ex/day × 3 sets, bands only.
+//           Mon Glutes/Hams · Tue Push · Wed Back/Bi · Thu Quads · Fri Arms ·
+//           Sat Stretch+Chest · Sun Rest. Year-long progression via band levels.
 
 const allWorkouts: Record<Level, Record<string, DayWorkout>> = {
   beginner: beginnerWorkouts,
-  intermediate: athleticWorkouts,
-  advanced: strengthWorkouts,
+  strength: strengthWorkouts,
 };
 
 // ─── Public API ────────────────────────────────────────────────────────────
 
 export function getWorkouts(level: Level): Record<string, DayWorkout> {
   return allWorkouts[level];
+}
+
+export function isLevel(value: unknown): value is Level {
+  return value === "beginner" || value === "strength";
 }
 
 /** Backward-compatible default (beginner) */
