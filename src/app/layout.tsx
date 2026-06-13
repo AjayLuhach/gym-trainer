@@ -44,9 +44,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <head>
-        <link rel="apple-touch-icon" href="/icon-192.svg" />
-      </head>
       <body>
         <div className="app-shell">{children}</div>
         <script
