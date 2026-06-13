@@ -1,44 +1,261 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════════════
+   STAY FIT — "Neon Athletic"
+   Near-black canvas · electric-lime "go" · violet/fuchsia "rest"
+   per-muscle color-coded illustrations · Anton + Hanken Grotesk
+   ════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Surfaces */
+  --color-ink: #09090c;
+  --color-ink-2: #0f0f14;
+  --color-surface: #15151c;
+  --color-surface-2: #1d1d26;
+
+  /* Signature accents */
+  --color-go: #c2f73e; /* electric lime — primary / working */
+  --color-go-deep: #9be600;
+  --color-rest: #a78bfa; /* violet — rest */
+  --color-rest-deep: #7c3aed;
+  --color-energy: #fb5b78; /* rose — accent / streak */
+  --color-cool: #2dd4bf; /* teal */
+  --color-gold: #fbbf24;
+
+  /* Type */
+  --font-display: var(--font-anton), "Arial Narrow", sans-serif;
+  --font-body: var(--font-hanken), system-ui, sans-serif;
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-hanken), ui-monospace, monospace;
+}
+
 :root {
-  --background: #0c0c0c;
-  --foreground: #e5e5e5;
+  color-scheme: dark;
+  --safe-b: env(safe-area-inset-bottom);
+  --safe-t: env(safe-area-inset-top);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: #ededf2;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
 }
 
-/* Minimal scrollbar */
+/* Ambient color wash behind the app — gives the dark canvas depth */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 38% at 50% -8%, rgba(194, 247, 62, 0.13), transparent 72%),
+    radial-gradient(46% 40% at 108% 105%, rgba(167, 139, 250, 0.13), transparent 70%),
+    radial-gradient(40% 34% at -8% 88%, rgba(45, 212, 191, 0.1), transparent 70%);
+}
+
+/* ─── App shell: full-height phone column, framed on large screens ──────── */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+@media (min-width: 500px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .app-shell {
+    height: min(940px, 100dvh);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 50px 140px -30px rgba(0, 0, 0, 0.9),
+      0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Desktop: widen into a two-pane app (focused exercise + session grid) */
+@media (min-width: 1024px) {
+  .app-shell {
+    max-width: 1080px;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 90px -20px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  width: 0;
+  height: 0;
 }
 
-/* PWA safe area */
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+/* ─── Utilities ─────────────────────────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
-/* Timer pulse animation */
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.35); }
-  70% { box-shadow: 0 0 0 18px rgba(96, 165, 250, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0); }
+/* Frosted card */
+.card {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  backdrop-filter: blur(8px);
 }
-.pulse-active {
-  animation: pulse-ring 1.5s ease-out infinite;
+
+/* Signature gradient text */
+.text-grad-go {
+  background: linear-gradient(100deg, #d9ff5c, #9be600 55%, #2dd4bf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-grad-rest {
+  background: linear-gradient(100deg, #c4b5fd, #a78bfa 50%, #fb5b78);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Primary action button — electric lime, dark ink text */
+.btn-go {
+  background: linear-gradient(135deg, #d4ff5a, #a3e635 60%, #84e600);
+  color: #0a0a0a;
+  box-shadow:
+    0 10px 30px -8px rgba(163, 230, 53, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ─── Motion ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .reveal-1 {
+    animation-delay: 0.04s;
+  }
+  .reveal-2 {
+    animation-delay: 0.1s;
+  }
+  .reveal-3 {
+    animation-delay: 0.16s;
+  }
+  .reveal-4 {
+    animation-delay: 0.22s;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Timer pulse halo */
+@keyframes haloGo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(194, 247, 62, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(194, 247, 62, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(194, 247, 62, 0);
+  }
+}
+@keyframes haloRest {
+  0% {
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(167, 139, 250, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0);
+  }
+}
+.halo-go {
+  animation: haloGo 1.6s ease-out infinite;
+}
+.halo-rest {
+  animation: haloRest 1.6s ease-out infinite;
+}
+
+/* Slow conic spin for the timer ring backdrop */
+@keyframes spinSlow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spinSlow 8s linear infinite;
+}
+
+/* Confetti / celebration pop */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.pop-in {
+  animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.float-y {
+  animation: floatY 3.5s ease-in-out infinite;
 }

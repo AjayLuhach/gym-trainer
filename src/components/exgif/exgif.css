@@ -1,0 +1,42 @@
+/* Real exercise GIFs presented as clean media cards with a category-colored
+   accent ring. SVG-illustration fallback for moves with no real footage. */
+
+.exgif-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.exgif-card {
+  position: relative;
+  width: 92%;
+  height: 92%;
+  max-width: 300px;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 26px -6px color-mix(in srgb, var(--accent) 50%, transparent),
+    0 16px 36px -14px rgba(0, 0, 0, 0.7);
+}
+.exgif-card-light {
+  background: linear-gradient(160deg, #ffffff, #eef0f4);
+}
+.exgif-card-dark {
+  background: var(--color-ink-2);
+}
+.exgif-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.exgif-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 2.5rem;
+}

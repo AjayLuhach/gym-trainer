@@ -1,22 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Anton, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Display: athletic poster face — used for titles, big numbers, the timer.
+const display = Anton({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-anton",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Body: clean, characterful grotesque for everything else.
+const body = Hanken_Grotesk({
   subsets: ["latin"],
+  variable: "--font-hanken",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Stay Fit - Trainer",
-  description: "Personal daily workout tracker",
+  title: "Stay Fit",
+  description: "Your daily workout, tracked.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -26,11 +29,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#3b82f6",
+  themeColor: "#0a0a0d",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -39,12 +43,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
-      <body className="min-h-dvh flex flex-col bg-[#0c0c0c] text-white">
-        {children}
+      <body>
+        <div className="app-shell">{children}</div>
         <script
           dangerouslySetInnerHTML={{
             __html: `
